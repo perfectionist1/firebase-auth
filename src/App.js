@@ -9,9 +9,10 @@ firebase.initializeApp(firebaseConfig);
 function App() {
   const [user, setUser] = useState({
     isSignedIn: false,
-    displayName: '',
+    name: '',
     email: '',
-    photoURL: ''
+    password: '',
+    photo: ''
   });
 
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -24,7 +25,7 @@ function App() {
       const signedInUser = {
         isSignedIn: true,
         name: displayName, 
-        email: email,
+        email: email,        
         photo: photoURL
       }
       setUser(signedInUser);
@@ -53,6 +54,30 @@ function App() {
     });
   }
 
+  const handleBlur = (e) => {
+    console.log(e.target.name, e.target.value);
+    let isFormValid = true;
+    if(e.target.name === 'email'){
+      isFormValid = /\S+@\S+\.\S+/.test(e.target.value);
+      //console.log(isEmailValid);
+    }
+    if(e.target.name === 'password'){
+      const isPassWordValid = e.target.value.length > 6 ;
+      const hasPasswordNumber = /\d{1}/.test(e.target.value);
+      //console.log(isPassWordValid && hasPasswordNumber);
+      isFormValid = isPassWordValid && hasPasswordNumber;
+    }
+    if(isFormValid){
+      const newUser = {...user};
+      newUser[e.target.name] = e.target.value;
+      setUser(newUser);
+    }
+  }
+
+  const handleSubmit = () => {
+
+  }
+
   return (
     <div className="App">      
       {
@@ -66,6 +91,19 @@ function App() {
             <img src={user.photo} alt=""/>
           </div>
       }
+      <h1> Our own Authentication</h1>
+        <form action="" onSubmit={handleSubmit}>
+          <p><input type="text" name="name" id=""placeholder="Name" onBlur={handleBlur} /></p>
+          <p><input type="text" name="email" id=""placeholder="Email" onBlur={handleBlur} required="required"/></p>
+          <p> <input type="password" onBlur={handleBlur} name="password" id="" placeholder="Password" required="required"/> </p>
+          <p><input type="submit" value="Submit"/></p>
+        </form>   
+
+        <div>
+          <p>Name: {user.name}</p>
+          <p>Email: {user.email}</p>  
+          <p>Password: {user.password}</p>
+        </div>   
     </div>
   );
 }
